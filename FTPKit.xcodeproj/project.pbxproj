@@ -414,7 +414,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = macosx10.12;
 			};
 			name = Debug;
 		};
@@ -448,7 +448,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				SDKROOT = iphoneos;
+				SDKROOT = macosx10.12;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;

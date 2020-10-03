@@ -231,6 +231,16 @@
     });
 }
 
+/*
+ our private C callback function bridges to progress block instance
+ */
+static int uploadCallback(netbuf *nControl, fsz_t xfered, void *arg) {
+    // arg is the pointer to progress block instance
+    BOOL (^progress)(NSUInteger, NSUInteger) = (__bridge typeof(progress)) arg;
+    // call progress block instance passed by caller
+    return progress(xfered, 0);
+}
+
 - (BOOL)uploadFile:(NSString *)localPath to:(NSString *)remotePath progress:(BOOL (^)(NSUInteger, NSUInteger))progress
 {
     netbuf *conn = [self connect];
@@ -238,11 +248,22 @@
         return NO;
     const char *input = [localPath cStringUsingEncoding:NSUTF8StringEncoding];
     const char *path = [remotePath cStringUsingEncoding:NSUTF8StringEncoding];
-    // @todo Send w/ appropriate mode. FTPLIB_ASCII | FTPLIB_BINARY
+        
+    if (progress) {
+        FtpCallbackOptions options;
+        memset(&options, 0, sizeof(options));
+        options.cbFunc = uploadCallback;            // pure c function that acts as bridge with progress block
+        options.cbArg = (__bridge void *) progress; // we pass progress block instance as a pointer
+        options.bytesXferred = 1;
+        FtpSetCallback(&options, conn);
+    }
+    
     int stat = FtpPut(input, path, FTPLIB_BINARY, conn);
-    // @todo Use 'progress' block.
     NSString *response = [NSString stringWithCString:FtpLastResponse(conn) encoding:NSUTF8StringEncoding];
+    
+    FtpClearCallback(conn);                         // clean up ftp callback context to avoid NULL pointer exceptions
     FtpQuit(conn);
+    
     if (stat == 0) {
         // Invalid path, wrong permissions, etc. Make sure that permissions are
         // set corectly on the path AND the path of the initialPath is correct.
