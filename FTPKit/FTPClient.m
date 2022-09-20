@@ -212,7 +212,8 @@
         memset(&options, 0, sizeof(options));
         options.cbFunc = callback;            // pure c function that acts as bridge with progress block
         options.cbArg = (__bridge void *) progress; // we pass progress block instance as a pointer
-        options.bytesXferred = 1;
+        options.bytesXferred = 1024;
+        options.idleTime = 200;
         FtpSetCallback(&options, conn);
     }
     
@@ -266,7 +267,8 @@ static int callback(netbuf *nControl, fsz_t xfered, void *arg) {
         memset(&options, 0, sizeof(options));
         options.cbFunc = callback;            // pure c function that acts as bridge with progress block
         options.cbArg = (__bridge void *) progress; // we pass progress block instance as a pointer
-        options.bytesXferred = 1;
+        options.bytesXferred = 1024;
+        options.idleTime = 200;
         FtpSetCallback(&options, conn);
     }
     
