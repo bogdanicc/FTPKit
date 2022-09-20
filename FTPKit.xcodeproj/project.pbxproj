@@ -271,6 +271,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = F27BA1C51802FE7E00584A9E;
@@ -414,7 +415,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				SDKROOT = macosx10.12;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
@@ -448,7 +449,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				SDKROOT = macosx10.12;
+				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
