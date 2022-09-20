@@ -24,7 +24,7 @@
  Send arbitrary command to the FTP server.
  
  @param command Command to send to the FTP server.
- @param netbuf Connection to FTP server.
+ @param conn Connection to FTP server.
  @return BOOL YES on success. NO otherwise.
  */
 - (BOOL)sendCommand:(NSString *)command conn:(netbuf *)conn;
@@ -106,7 +106,7 @@
 
 - (NSString *)urlEncode:(NSString *)path
 {
-    return [path stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    return [path stringByRemovingPercentEncoding];
 }
 
 - (long long int)fileSizeAtPath:(NSString *)path
@@ -651,11 +651,11 @@ static int callback(netbuf *nControl, fsz_t xfered, void *arg) {
 {
     dispatch_async(_queue, ^{
         NSDate *date = [self lastModifiedAtPath:remotePath];
-        if (! _lastError && success) {
+        if (! self.lastError && success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 success(date);
             });
-        } else if (_lastError && failure) {
+        } else if (self.lastError && failure) {
             [self returnFailure:failure];
         }
     });
@@ -710,11 +710,11 @@ static int callback(netbuf *nControl, fsz_t xfered, void *arg) {
 {
     dispatch_async(_queue, ^{
         BOOL exists = [self directoryExistsAtPath:remotePath];
-        if (! _lastError && success) {
+        if (! self.lastError && success) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 success(exists);
             });
-        } else if (_lastError && failure) {
+        } else if (self.lastError && failure) {
             [self returnFailure:failure];
         }
     });
